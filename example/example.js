@@ -1,15 +1,15 @@
 
 var init = function() {
-  var targetLoopTime = 1000;
+  var targetLoopTime = 50;
 
   function timeDelay(delayms) {
-    var start = performance.now();
-    while (performance.now() - start < delayms);
+    var start = Date().now;
+    while (Date().now - start < delayms);
   }
 
   function changeHtml() {
-    var randomNumber = Math.random()*targetLoopTime*.5;
-    $("#textField").html("Random Number: " + randomNumber.toFixed() + "<br />AvgWait: " + timedLoop.getLoopTime().toFixed() + "<br />LastWait: " + timedLoop.getWaitTime().toFixed());
+    var randomNumber = Math.random()*targetLoopTime;
+    $("#textField").html("Random Number: " + randomNumber.toFixed() + "<br />AvgWait: " + timedLoop.getLoopTime().toFixed());
     timeDelay(randomNumber);
   }
   
