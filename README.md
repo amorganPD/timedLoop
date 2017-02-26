@@ -5,15 +5,14 @@ Javascript library for creating timed loops for game logic
 ##Usage
 
 ```javascript
-  //****User Code**************************************
-  var logicLoop = function (data) {
+  // Function you want to run every loop
+  var yourLogic = function (data) {
     //some code
   }
-  var logicData = {};
-  //****End User Code**************************************
+  var yourData = {};
   
   // Register the functions, at least one function should be registered
-  timedLoop.registerFunction(logicLoop, logicData, 1); // (function, function data, priority)
+  timedLoop.registerFunction(yourLogic, yourData, 1); // (function, function data, priority)
   
   // Set loopTime, default is 50ms if function is not called
   timedLoop.setLoopTime(50); // time in ms
