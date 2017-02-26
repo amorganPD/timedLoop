@@ -35,7 +35,7 @@ var timedLoop = (function (timedLoop, undefined) {
 		logicFunctions.push(NewFunction);
 	}
 
-	timedLoop.startInterval = function () {
+	timedLoop.start = function () {
 		timedLoop.loopIntervalId = setInterval(function () {
 			previousTime = nowTime;
 			nowTime = performance.now();

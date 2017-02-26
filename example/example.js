@@ -15,7 +15,7 @@ var init = function() {
   
   timedLoop.registerFunction(changeHtml);
   timedLoop.setLoopTime(targetLoopTime);
-  timedLoop.startInterval();
+  timedLoop.start();
   
 }
 
