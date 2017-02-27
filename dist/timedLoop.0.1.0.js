@@ -15,9 +15,12 @@ var timedLoop = (function (timedLoop, undefined) {
 		NewFunction.useCustomLoopTime = (loopTime == undefined) ? false : true;
 		NewFunction.loopTime = loopTime || loopTIME;
 		NewFunction.id = 0;
-		NewFunction.nowTime = performance.now();
-		NewFunction.previousTime = NewFunction.nowTime;
+		NewFunction.nowLoopTime = performance.now();
+		NewFunction.previousLoopTime = NewFunction.nowLoopTime;
+		NewFunction.nowFuncCallTime = 0;
+		NewFunction.previousFuncCallTime = 0;
 		NewFunction.loopAverage = NewFunction.loopTime;
+		NewFunction.functionCallTimeAvg = 0;
 
 		return NewFunction;
 	}
@@ -29,23 +32,27 @@ var timedLoop = (function (timedLoop, undefined) {
 		if (desiredLoopTime < 15) { 
 			console.log("timedLoop: Cannot set lower than 15ms");
 		}
-		loopTIME = (desiredLoopTime < 15) ? 15 :desiredLoopTime;
+		loopTIME = (desiredLoopTime < 15) ? 15 : desiredLoopTime;
 	}
 
 	timedLoop.registerFunction = function (newFunction, name, newData, loopTime, priority) {
 		var index = loopFunctions.push(new loopFunction(newFunction, name, newData, loopTime, priority));
-		loopFunctions[index - 1].name = name || ('timeLoop-' + (index - 1));
+		loopFunctions[index - 1].name = name || ('timedLoop-' + (index - 1));
 	}
 
 	var loopFunctionSync = function (iLoop) {
 		var thisFunction = loopFunctions[iLoop];
 		
 		thisFunction.id = setInterval(function () {
-			thisFunction.previousTime = thisFunction.nowTime;
-			thisFunction.nowTime = performance.now();
+			thisFunction.previousLoopTime = thisFunction.nowLoopTime;
+			thisFunction.nowLoopTime = performance.now();
+			thisFunction.previousFuncCallTime = thisFunction.nowLoopTime;
 
 			thisFunction.pointer(thisFunction.data);
-			thisFunction.loopAverage = thisFunction.loopAverage * .9 + .1 * (thisFunction.nowTime - thisFunction.previousTime);
+			
+			thisFunction.nowFuncCallTime = performance.now();
+			thisFunction.functionCallTimeAvg = thisFunction.functionCallTimeAvg * .9 + .1 * (thisFunction.nowFuncCallTime - thisFunction.previousFuncCallTime);
+			thisFunction.loopAverage = thisFunction.loopAverage * .9 + .1 * (thisFunction.nowLoopTime - thisFunction.previousLoopTime);
 		}, (thisFunction.useCustomLoopTime) ? thisFunction.loopTime : loopTIME);
 
 		iLoop++;
@@ -57,17 +64,35 @@ var timedLoop = (function (timedLoop, undefined) {
 	timedLoop.start = function () {
 		loopFunctionSync(0);
 	}
-
 	timedLoop.stop = function () {
 		clearTimeout(timedLoop.loopId);
 	}
 
+	timedLoop.getFunctionByName = function (name) {
+		var functionIndex = -1;
+		loopFunctions.forEach(function(element, index) {
+			if (element.name == name) {
+				functionIndex = index;
+			}
+		});
+		return functionIndex;
+	}
+	timedLoop.getFunctionLoopTime = function(name) {
+		return loopFunctions[timedLoop.getFunctionByName(name)].functionCallTimeAvg;
+	}
+	timedLoop.getAllFunctionLoopTimes = function() {
+		var Averages = [];
+		loopFunctions.forEach(function (element) {
+			Averages.push({name: elemnt.name, loopTimeAverage: element.functionCallTimeAvg});
+		});
+		return Averages;
+	}
 	timedLoop.getLoopTime = function () {
 		var loopAverage = 0;
 		loopFunctions.forEach(function(element) {
 			loopAverage += element.loopAverage;
 		});
-		loopAverage = loopAverage / (loopFunction.length - 1);
+		loopAverage = loopAverage / (loopFunctions.length - 1);
 		return loopAverage; // in ms
 	}
 
