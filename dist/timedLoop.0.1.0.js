@@ -49,7 +49,7 @@ var timedLoop = (function (timedLoop, undefined) {
 			thisFunction.previousFuncCallTime = thisFunction.nowLoopTime;
 
 			thisFunction.pointer(thisFunction.data);
-			
+
 			thisFunction.nowFuncCallTime = performance.now();
 			thisFunction.functionCallTimeAvg = thisFunction.functionCallTimeAvg * .9 + .1 * (thisFunction.nowFuncCallTime - thisFunction.previousFuncCallTime);
 			thisFunction.loopAverage = thisFunction.loopAverage * .9 + .1 * (thisFunction.nowLoopTime - thisFunction.previousLoopTime);
@@ -92,7 +92,7 @@ var timedLoop = (function (timedLoop, undefined) {
 		loopFunctions.forEach(function(element) {
 			loopAverage += element.loopAverage;
 		});
-		loopAverage = loopAverage / (loopFunctions.length - 1);
+		loopAverage = loopAverage / (loopFunctions.length);
 		return loopAverage; // in ms
 	}
 
